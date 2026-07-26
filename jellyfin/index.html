@@ -112,16 +112,27 @@
                 if (res && res.ok) {
                     const data = await res.json();
                     if (data) {
+                        let parsed = [];
                         if (Array.isArray(data) && data.length > 0) {
-                            songsCatalog = data;
+                            parsed = data;
                         } else if (typeof data === 'object') {
-                            const arr = Object.values(data).filter(s => s && s.name);
-                            if (arr.length > 0) songsCatalog = arr;
+                            parsed = Object.values(data).filter(s => s && (s.name || s.title));
+                        }
+                        if (parsed.length > 0) {
+                            songsCatalog = parsed.map(s => ({
+                                name: s.name || s.title || 'Sin título',
+                                artist: s.artist || s.artists || 'Artista desconocido'
+                            }));
                         }
                     }
                 }
             } catch(e) {}
-            renderSongs(songsCatalog);
+            const searchInput = document.getElementById('songSearch');
+            if (searchInput && searchInput.value.trim().length > 0) {
+                filterSongs();
+            } else {
+                renderSongs(songsCatalog);
+            }
         }
 
         function renderSongs(list) {
@@ -217,6 +228,7 @@
         }
 
         fetchRemoteSongs();
+        setInterval(fetchRemoteSongs, 5000);
     </script>
 </body>
 </html>
