@@ -99,8 +99,8 @@
 
         async function fetchRemoteSongs() {
             try {
-                // Usar la URL relativa para obtener las canciones del servidor local
-                const res = await fetch('/api/songs');
+                // Usar la URL completa del servidor para obtener las canciones
+                const res = await fetch('/jellyfin/api/songs');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0) {
@@ -157,26 +157,30 @@
                 showStatus('Ingresa o selecciona una canción', false);
                 return;
             }
+            
+            if (!partyCode) {
+                showStatus('El código de la fiesta no se encontró en la URL.', false);
+                return;
+            }
 
             const btn = document.getElementById('btnSendManual');
             btn.disabled = true;
 
             try {
-                // Construir el payload con la estructura de array de objetos requerida por el servidor
-                const payload = [{
-                    id: `${Date.now()}_${Math.floor(Math.random() * 1000)}`, // Generate a unique ID
+                // Construir el payload con la estructura de objeto requerida
+                const payload = {
                     guestName: guestName,
                     songTitle: songTitle,
-                    partyCode: partyCode // Include partyCode from URL parameters
-                }];
+                    partyCode: partyCode
+                };
 
-                // Usar la URL relativa para enviar la petición al servidor local
-                const res = await fetch('/api/request', {
+                // Usar la URL completa del servidor para enviar la petición
+                const res = await fetch('/jellyfin/api/request', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
+
                 if (res.ok) {
                     const data = await res.json();
                     if(data.success) {
