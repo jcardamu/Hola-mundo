@@ -3,189 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎉 JellyMusic Fiesta - Pedir Canción</title>
+    <title>cardamu.es - ¡Hola Mundo!</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #0A0D14; color: #FFFFFF; display: flex; justify-content: center; padding: 20px 12px; min-height: 100vh; }
-        .card { background: #141824; border: 1px solid #1E2638; border-radius: 24px; width: 100%; max-width: 460px; padding: 24px; box-shadow: 0 12px 36px rgba(0,0,0,0.6); }
-        .header { text-align: center; margin-bottom: 22px; }
-        .badge { background: linear-gradient(135deg, #00E5FF, #00E676); color: #000; font-weight: 800; font-size: 11px; letter-spacing: 1px; padding: 5px 14px; border-radius: 20px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
-        h1 { font-size: 24px; font-weight: 800; color: #FFF; margin-bottom: 4px; }
-        p.sub { font-size: 13px; color: #9E9E9E; }
-        .party-code-badge { display: inline-block; background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: bold; margin-top: 8px; }
-        .form-group { margin-bottom: 16px; }
-        label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; color: #B0BEC5; display: block; margin-bottom: 6px; text-transform: uppercase; }
-        input[type="text"] { width: 100%; background: #0D111A; border: 1px solid #2A344A; color: #FFF; padding: 13px 15px; border-radius: 14px; font-size: 14px; outline: none; transition: all 0.2s; }
-        input[type="text"]:focus { border-color: #00E5FF; box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
-        .btn-submit { width: 100%; background: linear-gradient(135deg, #00E5FF, #00E676); color: #000; font-weight: 800; font-size: 15px; border: none; padding: 14px; border-radius: 14px; cursor: pointer; margin-top: 10px; transition: transform 0.1s, opacity 0.2s; }
-        .btn-submit:active { transform: scale(0.98); }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-        .songs-title { font-size: 12px; font-weight: 700; color: #8899A6; margin: 16px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; }
-        .songs-list { max-height: 240px; overflow-y: auto; border-radius: 14px; background: #0D111A; border: 1px solid #1E2638; }
-        .song-item { padding: 12px 14px; border-bottom: 1px solid #1A2234; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .song-item:last-child { border-bottom: none; }
-        .song-item:hover { background: #182236; }
-        .song-title { font-size: 14px; font-weight: bold; color: #FFF; }
-        .song-artist { font-size: 12px; color: #9E9E9E; margin-top: 2px; }
-        .btn-add { background: #00E5FF; color: #000; border: none; border-radius: 16px; padding: 6px 12px; font-size: 11px; font-weight: 800; transition: transform 0.1s; }
-        .btn-add:active { transform: scale(0.95); }
-        .status-msg { margin-top: 16px; padding: 14px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
-        .status-msg.success { background: rgba(0, 230, 118, 0.15); color: #00E676; border: 1px solid #00E676; }
-        .status-msg.error { background: rgba(255, 82, 82, 0.15); color: #FF5252; border: 1px solid #FF5252; }
-        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #556677; }
-        .footer a { color: #00E5FF; text-decoration: none; font-weight: bold; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            padding: 2.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 0;
+        }
+        .domain-name {
+            color: #3498db;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="header">
-            <span class="badge">🎵 CARDAMU FIESTA WEB</span>
-            <h1>Pedir Canción al Anfitrión</h1>
-            <p class="sub">Elige o escribe tu tema favorito para la playlist en vivo</p>
-            <div id="partyCodeDisplay" class="party-code-badge" style="display:none;">Código: <span id="codeVal">---</span></div>
-        </div>
-
-        <div class="form-group">
-            <label for="guestName">TU NOMBRE / APODO</label>
-            <input type="text" id="guestName" placeholder="Ej: Carlos" maxlength="30">
-        </div>
-
-        <div class="form-group">
-            <label for="songSearch">BUSCAR CANCIÓN O ARTISTA</label>
-            <input type="text" id="songSearch" placeholder="Escribe el nombre del tema..." oninput="filterSongs()">
-        </div>
-
-        <div class="songs-title">Temas Populares Recomendados</div>
-        <div id="songsContainer" class="songs-list">
-            <!-- Dynamic song items -->
-        </div>
-
-        <button class="btn-submit" id="btnSendManual" onclick="sendRequest()">➕ Enviar Petición de Canción</button>
-
-        <div id="statusBox" class="status-msg"></div>
-
-        <div class="footer">
-            Alojado en <a href="https://cardamu.es" target="_blank">cardamu.es</a> • JellyMusic Party
-        </div>
+    <div class="container">
+        <h1>¡Hola Mundo! 👋</h1>
+        <p>Bienvenido a <span class="domain-name">cardamu.es</span></p>
+        <p style="font-size: 0.9rem; margin-top: 20px;">Si estás viendo esto, tu dominio y tu hosting están conectados correctamente.</p>
     </div>
-
-    <script>
-        const defaultSongs = [
-            { name: "Columbia", artist: "Quevedo" },
-            { name: "LALA", artist: "Myke Towers" },
-            { name: "Despechá", artist: "Rosalía" },
-            { name: "Mon Amour (Remix)", artist: "zoilo, Aitana" },
-            { name: "Playa Del Inglés", artist: "Quevedo, Myke Towers" },
-            { name: "Starboy", artist: "The Weeknd" },
-            { name: "As It Was", artist: "Harry Styles" },
-            { name: "Flowers", artist: "Miley Cyrus" },
-            { name: "Pepas", artist: "Farruko" },
-            { name: "Tacones Rojos", artist: "Sebastián Yatra" },
-            { name: "Bzrp Music Sessions, Vol. 52", artist: "Bizarrap, Quevedo" }
-        ];
-
-        let songsCatalog = [...defaultSongs];
-
-        // Parse URL Parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const partyCode = urlParams.get('partyCode') || urlParams.get('code') || '';
-
-        if (partyCode) {
-            document.getElementById('partyCodeDisplay').style.display = 'inline-block';
-            document.getElementById('codeVal').innerText = partyCode;
-        }
-
-        async function fetchRemoteSongs() {
-            try {
-                const res = await fetch('/api/songs');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.length > 0) {
-                        songsCatalog = data;
-                    }
-                }
-            } catch(e) {}
-            renderSongs(songsCatalog);
-        }
-
-        function renderSongs(list) {
-            const container = document.getElementById('songsContainer');
-            if (!list || list.length === 0) {
-                container.innerHTML = '<div style="padding:16px; text-align:center; color:#888; font-size:12px;">Sin coincidencias. Escribe la canción en el campo de arriba.</div>';
-                return;
-            }
-            container.innerHTML = list.map(function(s) {
-                return '<div class="song-item" onclick="selectSong(\'' + escapeHtml(s.name) + '\')">' +
-                    '<div>' +
-                        '<div class="song-title">' + escapeHtml(s.name) + '</div>' +
-                        '<div class="song-artist">' + escapeHtml(s.artist) + '</div>' +
-                    '</div>' +
-                    '<button class="btn-add">Pedir</button>' +
-                '</div>';
-            }).join('');
-        }
-
-        function filterSongs() {
-            const q = document.getElementById('songSearch').value.toLowerCase().trim();
-            if (!q) {
-                renderSongs(songsCatalog);
-                return;
-            }
-            const filtered = songsCatalog.filter(s => 
-                s.name.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
-            );
-            renderSongs(filtered);
-        }
-
-        function selectSong(title) {
-            document.getElementById('songSearch').value = title;
-            sendRequest();
-        }
-
-        function escapeHtml(str) {
-            return str ? str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : '';
-        }
-
-        async function sendRequest() {
-            const guestName = document.getElementById('guestName').value.trim() || 'Invitado';
-            const songTitle = document.getElementById('songSearch').value.trim();
-
-            if (!songTitle) {
-                showStatus('Ingresa o selecciona una canción', false);
-                return;
-            }
-
-            const btn = document.getElementById('btnSendManual');
-            btn.disabled = true;
-
-            try {
-                const res = await fetch('/api/request', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ guestName, songTitle, partyCode })
-                });
-                const data = await res.json();
-                if (data && data.success) {
-                    showStatus('✨ ¡"' + songTitle + '" solicitada con éxito!', true);
-                } else {
-                    showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta!', true);
-                }
-            } catch (e) {
-                showStatus('✨ ¡"' + songTitle + '" solicitada con éxito!', true);
-            } finally {
-                btn.disabled = false;
-                document.getElementById('songSearch').value = '';
-            }
-        }
-
-        function showStatus(msg, isSuccess) {
-            const statusBox = document.getElementById('statusBox');
-            statusBox.className = 'status-msg ' + (isSuccess ? 'success' : 'error');
-            statusBox.innerText = msg;
-            statusBox.style.display = 'block';
-        }
-
-        fetchRemoteSongs();
-    </script>
 </body>
 </html>
