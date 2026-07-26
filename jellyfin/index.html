@@ -100,7 +100,7 @@
         async function fetchRemoteSongs() {
             try {
                 // Usar la URL completa del servidor para obtener las canciones
-                const res = await fetch('/jellyfin/api/songs');
+                const res = await fetch('https://ais-pre-wevk3kmbig4vs3qndtks3r-973234561989.europe-west2.run.app/api/songs');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0) {
