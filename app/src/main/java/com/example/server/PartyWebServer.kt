@@ -45,12 +45,22 @@ class PartyWebServer(
 
         if (method == Method.POST && uri == "/api/request") {
             return try {
-                val files = HashMap<String, String>()
-                session.parseBody(files)
-                val postData = files["postData"] ?: ""
-                val jsonObj = JSONObject(postData)
-                val guestName = jsonObj.optString("guestName", "Invitado")
-                val songTitle = jsonObj.optString("songTitle", "")
+                // Read the input stream directly for application/json
+                val inputStream = session.inputStream
+                val jsonString = inputStream.bufferedReader().use { it.readText() }
+
+                val jsonArray = JSONArray(jsonString)
+                if (jsonArray.length() == 0) {
+                    return newFixedLengthResponse(
+                        Response.Status.BAD_REQUEST,
+                        "application/json",
+                        "{\"success\": false, \"message\": \"El cuerpo de la petición está vacío o no es un array válido.\"}"
+                    )
+                }
+
+                val requestObject = jsonArray.getJSONObject(0) // Get the first object from the array
+                val guestName = requestObject.optString("guestName", "Invitado")
+                val songTitle = requestObject.optString("songTitle", "")
 
                 if (songTitle.isBlank()) {
                     return newFixedLengthResponse(

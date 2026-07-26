@@ -162,11 +162,13 @@
             btn.disabled = true;
 
             try {
-                // Construir el payload con la estructura de objeto requerida por el servidor
-                const payload = {
+                // Construir el payload con la estructura de array de objetos requerida por el servidor
+                const payload = [{
+                    id: `${Date.now()}_${Math.floor(Math.random() * 1000)}`, // Generate a unique ID
                     guestName: guestName,
-                    songTitle: songTitle
-                };
+                    songTitle: songTitle,
+                    partyCode: partyCode // Include partyCode from URL parameters
+                }];
 
                 // Usar la URL relativa para enviar la petición al servidor local
                 const res = await fetch('/api/request', {
