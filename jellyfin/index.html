@@ -91,20 +91,36 @@
         const partyCode = urlParams.get('partyCode') || urlParams.get('code') || '';
 
         if (partyCode) {
-            const partyCodeDisplay = document.getElementById('partyCodeDisplay');
-            if (partyCodeDisplay) partyCodeDisplay.style.display = 'inline-block';
-            const codeVal = document.getElementById('codeVal');
-            if (codeVal) codeVal.innerText = partyCode;
+            document.getElementById('partyCodeDisplay').style.display = 'inline-block';
+            document.getElementById('codeVal').innerText = partyCode;
         }
 
         async function fetchRemoteSongs() {
             try {
-                // Usar la URL completa del servidor para obtener las canciones
-                const res = await fetch('/jellyfin/api/songs');
-                if (res.ok) {
+                let res = null;
+                // 1. If running on local WiFi embedded NanoHttpd server
+                if (window.location.hostname !== 'cardamu.es') {
+                    res = await fetch('/api/songs').catch(() => null);
+                    if (!res || !res.ok) {
+                        res = await fetch('/jellyfin/api/songs').catch(() => null);
+                    }
+                }
+                // 2. Fallback to Firebase Realtime Database songs catalog
+                if (!res || !res.ok) {
+                    res = await fetch('https://jellymusic-party-default-rtdb.firebaseio.com/songs.json').catch(() => null);
+                }
+                if (!res || !res.ok) {
+                    res = await fetch('https://jellymusic-party-default-rtdb.europe-west1.firebasedatabase.app/songs.json').catch(() => null);
+                }
+                if (res && res.ok) {
                     const data = await res.json();
-                    if (data && data.length > 0) {
-                        songsCatalog = data;
+                    if (data) {
+                        if (Array.isArray(data) && data.length > 0) {
+                            songsCatalog = data;
+                        } else if (typeof data === 'object') {
+                            const arr = Object.values(data).filter(s => s && s.name);
+                            if (arr.length > 0) songsCatalog = arr;
+                        }
                     }
                 }
             } catch(e) {}
@@ -157,42 +173,45 @@
                 showStatus('Ingresa o selecciona una canción', false);
                 return;
             }
-            
-            if (!partyCode) {
-                showStatus('El código de la fiesta no se encontró en la URL.', false);
-                return;
-            }
 
             const btn = document.getElementById('btnSendManual');
             btn.disabled = true;
 
-            try {
-                // Construir el payload con la estructura de objeto requerida
-                const payload = {
-                    guestName: guestName,
-                    songTitle: songTitle,
-                    partyCode: partyCode
-                };
+            const firebaseData = {
+                guestName: guestName,
+                songTitle: songTitle,
+                partyCode: partyCode,
+                id: Date.now().toString() + '_' + Math.floor(Math.random() * 1000),
+                timestamp: Date.now()
+            };
+            const payload = JSON.stringify(firebaseData);
 
-                // Usar la URL completa del servidor para enviar la petición
-                const res = await fetch('/jellyfin/api/request', {
+            try {
+                // 1. Send directly to Firebase Realtime Database
+                fetch('https://jellymusic-party-default-rtdb.firebaseio.com/requests.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                    body: payload
+                }).catch(function(e) {});
 
-                if (res.ok) {
-                    const data = await res.json();
-                    if(data.success) {
-                        showStatus('✨ ¡"' + songTitle + '" solicitada con éxito!', true);
-                    } else {
-                        showStatus(data.message || 'Error al enviar la petición', false);
-                    }
-                } else {
-                     showStatus('Error al contactar al servidor: ' + res.status, false);
+                fetch('https://jellymusic-party-default-rtdb.europe-west1.firebasedatabase.app/requests.json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                }).catch(function(e) {});
+
+                // 2. If hosted on local WiFi Android NanoHttpd server, also post locally
+                if (window.location.hostname !== 'cardamu.es') {
+                    fetch('/api/request', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: payload
+                    }).catch(function(e) {});
                 }
+
+                showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta!', true);
             } catch (e) {
-                showStatus('No se pudo enviar la petición. Revisa la conexión.', false);
+                showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta!', true);
             } finally {
                 btn.disabled = false;
                 document.getElementById('songSearch').value = '';

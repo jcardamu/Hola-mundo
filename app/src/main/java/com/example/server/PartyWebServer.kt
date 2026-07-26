@@ -11,22 +11,66 @@ import java.util.Collections
 
 class PartyWebServer(
     port: Int = 8080,
-    private val onRequestReceived: (guestName: String, songTitle: String, partyCode: String) -> QrSongRequest,
-    private val getAvailableSongs: () -> List<JellyfinItem>,
-    private val getPendingRequests: (partyCode: String) -> List<QrSongRequest>
+    private val onRequestReceived: (guestName: String, songTitle: String) -> QrSongRequest,
+    private val getAvailableSongs: () -> List<JellyfinItem>
 ) : NanoHTTPD(port) {
+
+    companion object {
+        val pendingRequests = Collections.synchronizedList(mutableListOf<JSONObject>())
+
+        fun addPendingRequest(guestName: String, songTitle: String, partyCode: String = "") {
+            val obj = JSONObject().apply {
+                put("id", System.currentTimeMillis().toString() + "_" + (100..999).random())
+                put("guestName", guestName)
+                put("songTitle", songTitle)
+                put("partyCode", partyCode)
+                put("timestamp", System.currentTimeMillis())
+            }
+            pendingRequests.add(obj)
+        }
+
+        fun getLocalIpAddress(): String {
+            try {
+                val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
+                for (intf in interfaces) {
+                    val addrs = Collections.list(intf.inetAddresses)
+                    for (addr in addrs) {
+                        if (!addr.isLoopbackAddress) {
+                            val sAddr = addr.hostAddress
+                            if (sAddr != null && !sAddr.contains(":")) { // IPv4
+                                return sAddr
+                            }
+                        }
+                    }
+                }
+            } catch (ignored: Exception) {}
+            return "192.168.1.100"
+        }
+    }
 
     override fun serve(session: IHTTPSession): Response {
         val uri = session.uri
         val method = session.method
 
-        // Serve main page
-        if (method == Method.GET && (uri == "/" || uri.endsWith("index.html") || uri.startsWith("/jellyfin"))) {
+        if (method == Method.GET && (uri == "/" || uri == "/index.html" || uri.startsWith("/jellymusic") || uri.startsWith("/cardamu") || uri.startsWith("/jellyfin"))) {
             return newFixedLengthResponse(Response.Status.OK, "text/html", getWebPageHtml())
         }
 
-        // GET songs catalog
-        if (method == Method.GET && uri == "/jellyfin/api/songs") {
+        if (method == Method.GET && (uri == "/api/requests" || uri == "/jellyfin/api/requests")) {
+            val jsonArray = JSONArray()
+            synchronized(pendingRequests) {
+                pendingRequests.forEach { jsonArray.put(it) }
+            }
+            return newFixedLengthResponse(
+                Response.Status.OK,
+                "application/json",
+                jsonArray.toString()
+            ).apply {
+                addHeader("Access-Control-Allow-Origin", "*")
+            }
+        }
+
+        if (method == Method.GET && (uri == "/api/songs" || uri == "/jellyfin/api/songs")) {
             val songs = getAvailableSongs()
             val jsonArray = JSONArray()
             songs.forEach { song ->
@@ -45,50 +89,27 @@ class PartyWebServer(
                 addHeader("Access-Control-Allow-Origin", "*")
             }
         }
-        
-        // GET pending requests
-        if (method == Method.GET && uri == "/jellyfin/api/requests") {
-            val partyCode = session.parameters["code"]?.firstOrNull() ?: ""
-            val requests = getPendingRequests(partyCode)
-            val jsonArray = JSONArray()
-            requests.forEach { req ->
-                val obj = JSONObject().apply {
-                    put("id", req.id)
-                    put("guestName", req.guestName)
-                    put("songTitle", req.songTitle)
-                    put("partyCode", req.partyCode)
-                }
-                jsonArray.put(obj)
-            }
-            return newFixedLengthResponse(
-                Response.Status.OK,
-                "application/json",
-                jsonArray.toString()
-            ).apply {
-                addHeader("Access-Control-Allow-Origin", "*")
-            }
-        }
 
-        // POST a new song request
-        if (method == Method.POST && uri == "/jellyfin/api/request") {
+        if (method == Method.POST && (uri == "/api/request" || uri == "/jellyfin/api/request")) {
             return try {
-                val inputStream = session.inputStream
-                val jsonString = inputStream.bufferedReader().use { it.readText() }
+                val files = HashMap<String, String>()
+                session.parseBody(files)
+                val postData = files["postData"] ?: ""
+                val jsonObj = JSONObject(postData)
+                val guestName = jsonObj.optString("guestName", "Invitado")
+                val songTitle = jsonObj.optString("songTitle", "")
 
-                val requestObject = JSONObject(jsonString)
-                val guestName = requestObject.optString("guestName", "Invitado")
-                val songTitle = requestObject.optString("songTitle", "")
-                val partyCode = requestObject.optString("partyCode", "")
-
-                if (songTitle.isBlank() || partyCode.isBlank()) {
+                if (songTitle.isBlank()) {
                     return newFixedLengthResponse(
                         Response.Status.BAD_REQUEST,
                         "application/json",
-                        "{\"success\": false, \"message\": \"Faltan datos en la petición (songTitle, partyCode)\"}"
+                        "{\"success\": false, \"message\": \"Falta el nombre de la canción\"}"
                     )
                 }
 
-                val req = onRequestReceived(guestName, songTitle, partyCode)
+                val partyCode = jsonObj.optString("partyCode", "")
+                addPendingRequest(guestName, songTitle, partyCode)
+                val req = onRequestReceived(guestName, songTitle)
 
                 val responseObj = JSONObject().apply {
                     put("success", true)
@@ -121,7 +142,7 @@ class PartyWebServer(
             }
         }
 
-        return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Página no encontrada: $uri")
+        return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Página no encontrada")
     }
 
     private fun getWebPageHtml(): String {
@@ -287,25 +308,5 @@ class PartyWebServer(
             </body>
             </html>
         """.trimIndent()
-    }
-
-    companion object {
-        fun getLocalIpAddress(): String {
-            try {
-                val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-                for (intf in interfaces) {
-                    val addrs = Collections.list(intf.inetAddresses)
-                    for (addr in addrs) {
-                        if (!addr.isLoopbackAddress) {
-                            val sAddr = addr.hostAddress
-                            if (sAddr != null && !sAddr.contains(":")) { // IPv4
-                                return sAddr
-                            }
-                        }
-                    }
-                }
-            } catch (ignored: Exception) {}
-            return "192.168.1.100"
-        }
     }
 }
