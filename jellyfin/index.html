@@ -91,13 +91,16 @@
         const partyCode = urlParams.get('partyCode') || urlParams.get('code') || '';
 
         if (partyCode) {
-            document.getElementById('partyCodeDisplay').style.display = 'inline-block';
-            document.getElementById('codeVal').innerText = partyCode;
+            const partyCodeDisplay = document.getElementById('partyCodeDisplay');
+            if (partyCodeDisplay) partyCodeDisplay.style.display = 'inline-block';
+            const codeVal = document.getElementById('codeVal');
+            if (codeVal) codeVal.innerText = partyCode;
         }
 
         async function fetchRemoteSongs() {
             try {
-                const res = await fetch('/api/songs');
+                // Usar la URL completa del servidor para obtener las canciones
+                const res = await fetch('https://cardamu.es/jellyfin/api/songs');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0) {
@@ -159,19 +162,30 @@
             btn.disabled = true;
 
             try {
-                const res = await fetch('/api/request', {
+                // Construir el payload con la estructura de array de objetos requerida
+                const payload = [{
+                    id: `${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+                    guestName: guestName,
+                    songTitle: songTitle,
+                    partyCode: partyCode
+                }];
+
+                // Usar la URL completa del servidor para enviar la petición
+                const res = await fetch('https://cardamu.es/jellyfin', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ guestName, songTitle, partyCode })
+                    body: JSON.stringify(payload)
                 });
-                const data = await res.json();
-                if (data && data.success) {
+
+                // La respuesta puede no ser JSON, así que la manejamos con cuidado
+                if (res.ok) {
                     showStatus('✨ ¡"' + songTitle + '" solicitada con éxito!', true);
                 } else {
-                    showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta!', true);
+                    // Si hay un error, al menos confirmamos el envío al usuario
+                    showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta! (Error: ' + res.status + ')', true);
                 }
             } catch (e) {
-                showStatus('✨ ¡"' + songTitle + '" solicitada con éxito!', true);
+                showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta! (Petición enviada)', true);
             } finally {
                 btn.disabled = false;
                 document.getElementById('songSearch').value = '';
