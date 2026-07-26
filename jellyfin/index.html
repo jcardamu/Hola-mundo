@@ -107,10 +107,7 @@
                 }
                 // 2. Fallback to Firebase Realtime Database songs catalog
                 if (!res || !res.ok) {
-                    res = await fetch('https://jellymusic-party-default-rtdb.firebaseio.com/songs.json').catch(() => null);
-                }
-                if (!res || !res.ok) {
-                    res = await fetch('https://jellymusic-party-default-rtdb.europe-west1.firebasedatabase.app/songs.json').catch(() => null);
+                    res = await fetch('https://jellyfin-8d17c-default-rtdb.firebaseio.com/songs.json').catch(() => null);
                 }
                 if (res && res.ok) {
                     const data = await res.json();
@@ -188,13 +185,7 @@
 
             try {
                 // 1. Send directly to Firebase Realtime Database
-                fetch('https://jellymusic-party-default-rtdb.firebaseio.com/requests.json', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: payload
-                }).catch(function(e) {});
-
-                fetch('https://jellymusic-party-default-rtdb.europe-west1.firebasedatabase.app/requests.json', {
+                fetch('https://jellyfin-8d17c-default-rtdb.firebaseio.com/requests.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: payload
