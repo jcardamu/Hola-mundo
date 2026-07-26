@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/jellyfin/api/:path*",
+      "source": "https://cardamu.es/jellyfin/api/:path*",
       "destination": "https://ais-pre-wevk3kmbig4vs3qndtks3r-973234561989.europe-west2.run.app/api/:path*"
     }
   ]
