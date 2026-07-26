@@ -99,8 +99,8 @@
 
         async function fetchRemoteSongs() {
             try {
-                // Usar la URL completa del servidor para obtener las canciones
-                const res = await fetch('https://cardamu.es/jellyfin/api/songs');
+                // Usar la URL relativa para obtener las canciones del servidor local
+                const res = await fetch('/api/songs');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.length > 0) {
@@ -162,30 +162,31 @@
             btn.disabled = true;
 
             try {
-                // Construir el payload con la estructura de array de objetos requerida
-                const payload = [{
-                    id: `${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+                // Construir el payload con la estructura de objeto requerida por el servidor
+                const payload = {
                     guestName: guestName,
-                    songTitle: songTitle,
-                    partyCode: partyCode
-                }];
+                    songTitle: songTitle
+                };
 
-                // Usar la URL completa del servidor para enviar la petición
-                const res = await fetch('https://cardamu.es/jellyfin', {
+                // Usar la URL relativa para enviar la petición al servidor local
+                const res = await fetch('/api/request', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                // La respuesta puede no ser JSON, así que la manejamos con cuidado
+                
                 if (res.ok) {
-                    showStatus('✨ ¡"' + songTitle + '" solicitada con éxito!', true);
+                    const data = await res.json();
+                    if(data.success) {
+                        showStatus('✨ ¡"' + songTitle + '" solicitada con éxito!', true);
+                    } else {
+                        showStatus(data.message || 'Error al enviar la petición', false);
+                    }
                 } else {
-                    // Si hay un error, al menos confirmamos el envío al usuario
-                    showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta! (Error: ' + res.status + ')', true);
+                     showStatus('Error al contactar al servidor: ' + res.status, false);
                 }
             } catch (e) {
-                showStatus('✨ ¡"' + songTitle + '" enviada a la fiesta! (Petición enviada)', true);
+                showStatus('No se pudo enviar la petición. Revisa la conexión.', false);
             } finally {
                 btn.disabled = false;
                 document.getElementById('songSearch').value = '';
