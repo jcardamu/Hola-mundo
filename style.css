@@ -150,6 +150,36 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .container {
+        margin: 10px auto;
+        padding: 0 15px;
+    }
+
+    .header {
+        flex-direction: column;
+        padding: 20px 15px;
+        text-align: center;
+    }
+
+    .header-placeholder {
+        display: none; /* Hide placeholder on mobile */
+    }
+
+    .header-content {
+        flex-grow: unset; /* Remove flex-grow on mobile */
+        width: 100%; /* Take full width */
+        margin-top: 10px; /* Space between logo and text */
+        order: 2; /* Place content after logo */
+    }
+
+    .sap-logo {
+        height: 40px; /* Smaller logo on mobile */
+        margin: 0; /* Remove specific margins */
+        padding: 0; /* Remove specific paddings */
+        order: 1; /* Place logo first when stacked */
+        margin-bottom: 10px; /* Space below the logo */
+    }
+
     .header h1 {
         font-size: 2em;
     }
