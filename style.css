@@ -1,0 +1,159 @@
+/* SAP Fiori Inspired Styles */
+
+:root {
+    --sap-primary-color: #0066D6; /* SAP Blue */
+    --sap-header-color: #354A5F;
+    --sap-background-color: #F5F7F9;
+    --sap-card-background: #FFFFFF;
+    --sap-text-color: #333333;
+    --sap-light-text-color: #FFFFFF;
+    --sap-border-color: #D9D9D9;
+    --sap-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    background-color: var(--sap-background-color);
+    color: var(--sap-text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 960px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Header */
+.header {
+    background-color: var(--sap-header-color);
+    color: var(--sap-light-text-color);
+    padding: 20px 0; /* Remove horizontal padding here, will be managed by inner elements */
+    border-bottom: 4px solid var(--sap-primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribute items */
+}
+
+.header-placeholder {
+    width: 50px; /* Same as logo height/width for balance */
+    margin-left: 40px; /* Match right padding of logo */
+}
+
+.header-content {
+    flex-grow: 1; /* Allows the content to take up available space */
+    text-align: center;
+}
+
+.sap-logo {
+    height: 50px;
+    margin-right: 40px; /* Space from the right edge */
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+.header p {
+    margin: 5px 0 0;
+    font-size: 1.2em;
+}
+
+/* Main Content */
+.card {
+    background-color: var(--sap-card-background);
+    border-radius: 8px;
+    box-shadow: var(--sap-shadow);
+    margin-bottom: 25px;
+    padding: 25px;
+    border: 1px solid var(--sap-border-color);
+}
+
+.card h2 {
+    color: var(--sap-primary-color);
+    border-bottom: 2px solid var(--sap-border-color);
+    padding-bottom: 10px;
+    margin-top: 0;
+    font-size: 1.8em;
+}
+
+/* Experience Section */
+.job {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.job:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.job-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: var(--sap-text-color);
+}
+
+.job-company {
+    color: #555;
+    font-style: italic;
+}
+
+.job-description {
+    margin-top: 10px;
+}
+
+/* Education Section */
+.education-item {
+    margin-bottom: 15px;
+}
+
+.education-title {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.education-institution {
+    color: #555;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 30px 20px;
+    background-color: var(--sap-header-color);
+    color: var(--sap-light-text-color);
+    margin-top: 40px;
+}
+
+.footer h3 {
+    margin-top: 0;
+    color: var(--sap-light-text-color);
+}
+
+.contact-links a {
+    color: var(--sap-light-text-color);
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1.1em;
+    transition: color 0.3s;
+}
+
+.contact-links a:hover {
+    color: var(--sap-primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2em;
+    }
+    .card h2 {
+        font-size: 1.5em;
+    }
+}

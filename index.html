@@ -3,45 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cardamu.es - ¡Hola Mundo!</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        .container {
-            text-align: center;
-            padding: 2.5rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        p {
-            font-size: 1.2rem;
-            color: #666;
-            margin-top: 0;
-        }
-        .domain-name {
-            color: #3498db;
-            font-weight: bold;
-        }
-    </style>
+    <title>Juan Carlos - Portafolio</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <header class="header">
+        <div class="header-placeholder"></div>
+        <div class="header-content">
+            <h1>Juan Carlos</h1>
+            <p>Programador SAP ABAP HCM/HR</p>
+        </div>
+        <img src="Imagenes/SAP HR.png" alt="SAP HR Logo" class="sap-logo">
+    </header>
+
     <div class="container">
-        <h1>¡Hola Mundo! 👋</h1>
-        <p>Bienvenido a <span class="domain-name">cardamu.es</span></p>
-        <p style="font-size: 0.9rem; margin-top: 20px;">Si estás viendo esto, tu dominio y tu hosting están conectados correctamente.</p>
+        <section id="about" class="card">
+            <h2>Perfil Profesional</h2>
+            <p>
+                Profesional resolutivo especializado en SAP HCM y SAP FI, con sólidos conocimientos de consultoría y desarrollo. Experiencia en el ciclo completo de diseño y gestión de evolutivos, desde toma de requerimientos hasta despliegue. Experto en mantenimiento y soporte de sistemas críticos, con capacidad analítica para resolver ágilmente incidencias y afrontar adversidades en entornos productivos.
+            </p>
+        </section>
+
+        <section id="experience" class="card">
+            <h2>Experiencia Profesional</h2>
+            <div class="job">
+                <p><span class="job-title">Consultor SAP</span> | <span class="job-company">MINSAIT</span></p>
+                <ul class="job-description">
+                    <li>Liderazgo técnico-funcional en SAP HCM, gestionando evolutivos y traduciendo necesidades de RRHH en soluciones.</li>
+                    <li>Resolución de incidencias críticas en producción con alta capacidad de respuesta.</li>
+                    <li>Implementación de mejoras con Enhancements y Workflows.</li>
+                </ul>
+            </div>
+            <div class="job">
+                <p><span class="job-title">Centers Developer 2 SAP</span> | <span class="job-company">NTTDATA</span></p>
+                <ul class="job-description">
+                    <li>Resolución e implementación en proyecto SAP HCM desde cero.</li>
+                    <li>Diseño de Reports, Interfaces, Conversiones y Formularios (RICE-F) orientados a HCM.</li>
+                    <li>Desarrollos bajo SAP HANA y metodologías Clean Core.</li>
+                </ul>
+            </div>
+            <div class="job">
+                <p><span class="job-title">Junior Delivery Analyst SAP</span> | <span class="job-company">DELOITTE</span></p>
+                <ul class="job-description">
+                    <li>Soporte técnico, mantenimiento correctivo y evolutivo en procesos de SAP HCM y SAP FI.</li>
+                    <li>Resolución de incidencias diarias y adquisición de base estructural resolutiva.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="education" class="card">
+            <h2>Historial Educativo</h2>
+            <div class="education-item">
+                <p class="education-title">Desarrollo de Aplicaciones Multiplataforma</p>
+                <p class="education-institution">Centro Salesianos Triana (Sevilla) | 2020 - 2022</p>
+            </div>
+            <div class="education-item">
+                <p class="education-title">Bachillerato de Ciencias</p>
+                <p class="education-institution">IES V Centenario (Sevilla) | 2018 - 2020</p>
+            </div>
+        </section>
     </div>
+
+    <footer class="footer">
+        <h3>Contacto</h3>
+        <div class="contact-links">
+            <a href="mailto:cardamu02@gmail.com">cardamu02@gmail.com</a>
+            <a href="https://www.linkedin.com/in/juancarlosar02/" target="_blank">LinkedIn</a>
+        </div>
+    </footer>
+
 </body>
 </html>
